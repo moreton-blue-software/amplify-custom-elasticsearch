@@ -1,0 +1,28 @@
+{
+  "plugins": ["jest"],
+  "extends": "airbnb-base",
+  "rules": {
+    "no-unused-vars": 2,
+    "no-param-reassign": "off",
+    "no-return-await": "off",
+    "no-continue": "off",
+    "no-await-in-loop": "off",
+    "no-use-before-define": "off",
+    "no-console": "off",
+    "global-require": "off",
+    "import/no-dynamic-require": "off",
+    "consistent-return": "off",
+    "no-plusplus": "off",
+    "linebreak-style": "off",
+    "no-restricted-syntax": "off",
+    "spaced-comment": "off",
+    "brace-style": "off",
+    "one-var": "off",
+    "guard-for-in": "off",
+    "one-var-declaration-per-line": "off",
+    "prefer-destructuring": "off"
+  },
+  "env": {
+    "jest/globals": true
+  }
+}

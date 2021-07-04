@@ -1,0 +1,12 @@
+{
+  "name": "custom-es-plugin",
+  "type": "category",
+  "commands": [
+    "version",
+    "help"
+  ],
+  "eventHandlers": [
+    "PrePush",
+    "PostPush"
+  ]
+}
