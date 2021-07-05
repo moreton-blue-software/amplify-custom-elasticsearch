@@ -111,6 +111,12 @@ async function updateSearchableStack() {
 
 async function run(context) {
   try {
+    const config = dirHelper.getConfig();
+    if (!config) {
+      context.print.info('"amplify-custom-elasticsearch.json" not found. skipping...');
+      return;
+    }
+
     context.parameters.options['no-gql-override'] = true; // prevent any changes to be overwritten
 
     context.print.info('Building api files');

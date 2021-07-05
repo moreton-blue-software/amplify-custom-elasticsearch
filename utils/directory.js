@@ -15,7 +15,12 @@ function readJson(...args) {
 function getConfig() {
   const amplifyEnv = getEnv();
   if (!config) {
-    const rawConfig = readJson('amplify-custom-elasticsearch.json');
+    let rawConfig;
+    try {
+      rawConfig = readJson('amplify-custom-elasticsearch.json');
+    } catch (err) {
+      return;
+    }
     let envConfig = {};
     for (const envKey in rawConfig.env) {
       const pattern = new RegExp(envKey);
