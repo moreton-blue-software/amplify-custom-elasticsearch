@@ -28,7 +28,7 @@ function getConfig() {
     }
     if (envConfig.esDomainArn) envConfig.esRegion = envConfig.esDomainArn.split(':')[3];
 
-    config = { ...envConfig };
+    if (!_.isEmpty(envConfig)) config = { ...envConfig };
   }
 
   return config;
