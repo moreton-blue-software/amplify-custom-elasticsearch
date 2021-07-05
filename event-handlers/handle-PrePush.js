@@ -3,13 +3,21 @@ const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 const dirHelper = require('../utils/directory');
+const archiveLambdaStreaming = require('./searchable/archive-lambda-streaming');
+const updateSearchResolvers = require('./searchable/update-search-resolvers');
 
 const eventName = 'PrePush';
+const streamingLambdaFunctionZipName = 'ElasticSearchStreamingLambdaFunctionMulti.zip';
 
 async function updateSearchableStack() {
   const gqlApiDirectory = dirHelper.getApiDirectory();
   const config = dirHelper.getConfig();
-  console.log('>>proxy-es/index::', 'backendCfg', config); //TRACE
+
+  const apiName = dirHelper.getApiName();
+  const amplifyEnv = dirHelper.getEnv();
+
+  const esIndexPrefix = `${apiName}-${amplifyEnv}-`;
+  // console.log('>>proxy-es/index::', 'backendCfg', config, apiName, amplifyEnv); //TRACE
   // TODO: add check custom searchable stack
   // if(path.join(gqlApiDirectory,'stacks',''))
   const searchableStackPath = path.join(
@@ -63,11 +71,36 @@ async function updateSearchableStack() {
         `Resources.${key}.Properties.Environment.Variables.ES_REGION`,
         config.esRegion,
       );
+      _.set(
+        searchableStack,
+        `Resources.${key}.Properties.Environment.Variables.ES_INDEX_PREFIX`,
+        esIndexPrefix,
+      );
+      _.set(searchableStack, `Resources.${key}.Properties.Code.S3Key`, {
+        'Fn::Join': [
+          '/',
+          [
+            {
+              Ref: 'S3DeploymentRootKey',
+            },
+            'functions',
+            streamingLambdaFunctionZipName,
+          ],
+        ],
+      });
       _.set(searchableStack, `Resources.${key}.DependsOn`, [
         'ElasticSearchStreamingLambdaIAMRole',
       ]);
     }
   }
+
+  await archiveLambdaStreaming(
+    path.join(gqlApiDirectory, 'build', 'functions', streamingLambdaFunctionZipName),
+  );
+  await updateSearchResolvers(
+    path.join(gqlApiDirectory, 'build', 'resolvers'),
+    esIndexPrefix,
+  );
 
   fs.writeFileSync(
     // `${searchableStackPath}.n.json`,
@@ -92,7 +125,7 @@ async function run(context) {
 
     await updateSearchableStack();
 
-    context.print.info(`Event hhuhuhuu handler ${eventName} to be implemented.`);
+    context.print.info('Custom amplify elasticsearch connection configured');
   } catch (err) {
     context.print.error(err);
     throw err;

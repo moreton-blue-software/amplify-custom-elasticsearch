@@ -1,4 +1,4 @@
-process.env.AWS_BRANCH = 'dev';
+// process.env.AWS_BRANCH = 'dev';
 
 const shell = require('shelljs');
 const _ = require('lodash');

@@ -1,9 +1,11 @@
 # amplify-custom-elasticsearch
+
 Amplify custom elasticsearch plugin
 
 ### Usage:
 
 On your amplify project directory,
+
 ```
 1. yarn add amplify-custom-elasticsearch -D
 2. create `amplify-custom-elasticsearch.json` on the root folder.
@@ -11,7 +13,9 @@ On your amplify project directory,
 ```
 
 ### Configuration file: `amplify-custom-elasticsearch.json`
+
 Put all amplify environment details under `env`
+
 ```
 {
   "env": {

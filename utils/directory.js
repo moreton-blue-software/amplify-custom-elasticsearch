@@ -6,19 +6,20 @@ const cwd = process.cwd();
 
 const amplifyDir = path.join(cwd, 'amplify');
 
-let apiDir, config;
+let apiName, apiDir, config;
 
 function readJson(...args) {
   return JSON.parse(fs.readFileSync(path.join(...args), 'utf8'));
 }
 
 function getConfig() {
+  const amplifyEnv = getEnv();
   if (!config) {
     const rawConfig = readJson('amplify-custom-elasticsearch.json');
     let envConfig = {};
     for (const envKey in rawConfig.env) {
       const pattern = new RegExp(envKey);
-      if (pattern.test(process.env.AWS_BRANCH)) envConfig = rawConfig.env[envKey];
+      if (pattern.test(amplifyEnv)) envConfig = rawConfig.env[envKey];
     }
     if (envConfig.esDomainArn) envConfig.esRegion = envConfig.esDomainArn.split(':')[3];
 
@@ -26,6 +27,20 @@ function getConfig() {
   }
 
   return config;
+}
+
+function getApiName() {
+  if (!apiName) throw new Error('No ApiName found');
+  return apiName;
+}
+
+function getEnv() {
+  let ampEnv = process.env.AWS_BRANCH || process.env.USER_BRANCH;
+  if (!ampEnv) {
+    const localEnvJson = readJson(amplifyDir, '.config', 'local-env-info.json');
+    ampEnv = localEnvJson.envName;
+  }
+  return ampEnv;
 }
 
 function getApiDirectory() {
@@ -41,7 +56,7 @@ function getApiDirectory() {
     }
     console.log('>>proxy-es/index::', 'gqlApiName', gqlApiName); //TRACE
     if (!gqlApiName) throw new Error('Cannot find API');
-
+    apiName = gqlApiName;
     apiDir = path.join(amplifyDir, 'backend', 'api', gqlApiName);
   }
 
@@ -85,7 +100,9 @@ function getAwsExports() {
 module.exports = {
   readJson,
   amplifyDir,
+  getEnv,
   getConfig,
+  getApiName,
   getApiDirectory,
   getAwsExports,
   getReqResolverVtl,
