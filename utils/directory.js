@@ -40,7 +40,7 @@ function getApiName() {
 }
 
 function getEnv() {
-  let ampEnv = process.env.AWS_BRANCH || process.env.USER_BRANCH;
+  let ampEnv = process.env.ENV || process.env.AWS_BRANCH || process.env.USER_BRANCH;
   if (!ampEnv) {
     const localEnvJson = readJson(amplifyDir, '.config', 'local-env-info.json');
     ampEnv = localEnvJson.envName;
